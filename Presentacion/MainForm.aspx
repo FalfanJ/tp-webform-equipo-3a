@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Ingreso de Voucher" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="MainForm.aspx.cs" Inherits="PromoGana.MainForm" %>
 
-<asp:Content ID="Content1" ContentPlaceHolderID="MainContent" runat="server">
+<asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
     <div class="row justify-content-center mt-5">
         <div class="col-md-6">
             <div class="card shadow-lg p-4">

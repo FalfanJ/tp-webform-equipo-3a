@@ -8,9 +8,22 @@ using Dominio;
 
 namespace Negocio
 {
+    public enum EstadoVoucher
+    {
+        NoExiste,
+        Usado,
+        Disponible
+    }
+
+    public class ResultadoVoucher
+    {
+        public EstadoVoucher Estado { get; set; }
+        public Vouchers Voucher { get; set; }
+    }
+
     public class VoucherNegocio
     {
-        public Vouchers ValidarVoucher(string codigo)
+        public ResultadoVoucher ValidarVoucherConEstado(string codigo)
         {
             AccesoDatos datos = new AccesoDatos();
             try
@@ -19,24 +32,32 @@ namespace Negocio
                 datos.SetearParametro("@codigo", codigo);
                 datos.EjecutarLectura();
 
-                if (datos.Lector.Read())
+                if (!datos.Lector.Read())
                 {
-                    // si ya tiene cliente y fecha → ya usado
-                    if (datos.Lector["IdCliente"] != DBNull.Value && datos.Lector["FechaCanje"] != DBNull.Value)
-                        return null;
-
-                    Vouchers v = new Vouchers
-                    {
-                        CodigoVoucher = (string)datos.Lector["CodigoVoucher"]
-                    };
-                    return v;
+                    //  no existe
+                    return new ResultadoVoucher { Estado = EstadoVoucher.NoExiste };
                 }
 
-                return null;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                object idClienteObj = datos.Lector["IdCliente"];
+                object fechaObj = datos.Lector["FechaCanje"];
+
+                if (idClienteObj != DBNull.Value && fechaObj != DBNull.Value)
+                {
+                    //  existe pero ya está usado
+                    return new ResultadoVoucher { Estado = EstadoVoucher.Usado };
+                }
+
+                // disponible
+                Vouchers v = new Vouchers
+                {
+                    CodigoVoucher = datos.Lector["CodigoVoucher"].ToString()
+                };
+
+                return new ResultadoVoucher
+                {
+                    Estado = EstadoVoucher.Disponible,
+                    Voucher = v
+                };
             }
             finally
             {

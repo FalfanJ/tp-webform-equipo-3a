@@ -19,26 +19,22 @@ namespace PromoGana
         {
             string codigoVoucher = txtVoucher.Text.Trim();
 
-            if (string.IsNullOrEmpty(codigoVoucher))
-            {
-                lblMensaje.Text = "⚠️ Debés ingresar un código de voucher.";
-                return;
-            }
-
             VoucherNegocio negocio = new VoucherNegocio();
-            Vouchers voucher = negocio.ValidarVoucher(codigoVoucher);
+            var resultado = negocio.ValidarVoucherConEstado(codigoVoucher);
 
-            if (voucher == null)
+            if (resultado.Estado == EstadoVoucher.NoExiste)
             {
-                // Si no es válido, lo mando a la pantalla de error
+                Session["ErrorMsg"] = "❌ El voucher ingresado no existe.";
                 Response.Redirect("Error.aspx");
             }
-            else
+            else if (resultado.Estado == EstadoVoucher.Usado)
             {
-                // Guardar en sesión para usarlo en el siguiente paso
+                Session["ErrorMsg"] = "⚠️ El voucher ingresado ya fue utilizado.";
+                Response.Redirect("Error.aspx");
+            }
+            else if (resultado.Estado == EstadoVoucher.Disponible)
+            {
                 Session["CodigoVoucher"] = codigoVoucher;
-
-                // Redirigir a la selección de premios
                 Response.Redirect("SeleccionPremio.aspx");
             }
         }
