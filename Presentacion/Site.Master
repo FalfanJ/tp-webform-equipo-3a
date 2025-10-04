@@ -9,6 +9,9 @@
 
     <link href="Content/bootstrap.css" rel="stylesheet" />
     <script src="Scripts/bootstrap.bundle.js"></script>
+
+    <!-- ContentPlaceHolder para que las páginas de contenido puedan inyectar CSS o scripts -->
+    <asp:ContentPlaceHolder ID="head" runat="server" />
 </head>
 <body>
     <form runat="server">
@@ -28,7 +31,7 @@
                             <a class="nav-link" href="SeleccionPremio.aspx">Premios</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="RegistroCliente.aspx">Registro</a>
+                            <a class="nav-link" href="registro.aspx">Registro</a>
                         </li>
                     </ul>
                 </div>
