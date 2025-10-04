@@ -26,8 +26,18 @@ namespace Presentacion
         protected void Page_Load(object sender, EventArgs e)
         {
             Cargar();
-            Repetidor.DataSource = listArt;
-            Repetidor.DataBind();
+            if (!IsPostBack)
+            {
+                Repetidor.DataSource = listArt;
+                Repetidor.DataBind();
+            }
+        }
+
+        protected void btnSelecionador_Click(object sender, EventArgs e)
+        {
+            int valor = int.Parse(((Button)sender).CommandArgument);
+            Session["CodPremio"] = valor;
+            Response.Redirect("registro.aspx");
         }
     }
 }

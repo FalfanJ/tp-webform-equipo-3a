@@ -18,7 +18,8 @@
                             <h5 class="card-title"><%# Eval("Nombre") %></h5>
                         </div>
                         <div class="card-footer">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#artModal<%#Eval("Id") %>">Detalle</button>
+                            <asp:Button ID="brnSelecionador" runat="server" Text="Quiero este" CssClass="btn btn-primary" CommandArgument='<%#Eval("Id") %>' CommandName="ArticuloId" OnClick="btnSelecionador_Click"  />
+                            <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#artModal<%#Eval("Id") %>">Detalle</button>
                         </div>
                     </div>
                 </div>
