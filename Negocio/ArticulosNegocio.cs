@@ -21,8 +21,11 @@ namespace Negocio
                 datos.EjecutarLectura();
                 while (datos.Lector.Read())
                 {
-                    Articulos aux = new Articulos();
-                    aux.Id = (int)datos.Lector["Id"];
+                    ImagenesNegocio imgNeg = new ImagenesNegocio();
+                    int id = (int)datos.Lector["Id"];
+
+                    Articulos aux = new Articulos(imgNeg.Listar(id));
+                    aux.Id = id;
                     aux.Codigo = (string)datos.Lector["Codigo"];
                     aux.Nombre = (string)datos.Lector["Nombre"];
                     aux.Descripcion = (string)datos.Lector["Descripcion"];
