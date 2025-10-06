@@ -15,10 +15,6 @@ namespace Dominio
         public decimal Precio { get; set; }
         public Marcas Marca { get; set; }
         public Categorias Categoria { get; set; }
-        public List<Imagenes> Imagenes { get; set; }
-        public Articulos(List<Imagenes> imagenes)
-        {
-            this.Imagenes = imagenes;
-        }
+        public List<Imagenes> Imagenes { get; set; } = new List<Imagenes>();
     }
 }
