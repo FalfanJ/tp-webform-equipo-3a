@@ -12,11 +12,38 @@ namespace Presentacion
     public partial class SeleccionPremio : System.Web.UI.Page
     {
         public List<Articulos> listArt { get; set; }
+        public List<Imagenes> listImg { get; set; }
 
         void Cargar()
         {
-            ArticulosNegocio artNeg = new ArticulosNegocio();
-            listArt = artNeg.Listar();
+            try
+            {
+                ArticulosNegocio artNeg = new ArticulosNegocio();
+                ImagenesNegocio imgNeg = new ImagenesNegocio();
+                listArt = artNeg.Listar();
+                listImg = imgNeg.Listar();
+                foreach (Articulos item in listArt)
+                {
+                    item.Imagenes = listImg.FindAll(x => x.IdArticulo == item.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+        }
+
+        public string url0(int numero)
+        {
+            if (listArt.Find(x => x.Id == numero).Imagenes.Count != 0)
+            {
+                return listArt.Find(x => x.Id == numero).Imagenes[0].ImagenURL;
+            }
+            else
+            {
+                return "";
+            }
         }
 
         public string Active(int numero)
@@ -25,11 +52,19 @@ namespace Presentacion
         }
         protected void Page_Load(object sender, EventArgs e)
         {
-            Cargar();
-            if (!IsPostBack)
+            try
             {
-                Repetidor.DataSource = listArt;
-                Repetidor.DataBind();
+                Cargar();
+                if (!IsPostBack)
+                {
+                    Repetidor.DataSource = listArt;
+                    Repetidor.DataBind();
+                }
+            }
+            catch (Exception ex)
+            {
+                Session.Add("error", ex);
+                throw ex;
             }
         }
 

@@ -13,7 +13,8 @@
             <ItemTemplate>
                 <div class="col">
                     <div class="card h-100">
-                        <img src="<%# Eval("Imagenes[0].ImagenURL") %>" class="card-img-top d-block w-100" alt="...">
+                        <%--<img src="<%# Eval("Imagenes[0].ImagenURL") %>" class="card-img-top d-block w-100" alt="...">--%>
+                         <asp:Image ID="Image1" runat="server" CssClass="card-img-top d-block w-100" AlternateText="..." ImageUrl='<%# url0((int)Eval("Id")) %>'/>
                         <div class="card-body">
                             <h5 class="card-title"><%# Eval("Nombre") %></h5>
                         </div>
