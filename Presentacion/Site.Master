@@ -13,8 +13,8 @@
     <!-- ContentPlaceHolder para que las páginas de contenido puedan inyectar CSS o scripts -->
     <asp:ContentPlaceHolder ID="head" runat="server" />
 </head>
-<body>
-    <form runat="server">
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+    <form runat="server" style="flex: 1; display: flex; flex-direction: column;">
         <!-- Barra de navegación -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
@@ -27,19 +27,13 @@
                         <li class="nav-item">
                             <a class="nav-link" href="MainForm.aspx">Inicio</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="SeleccionPremio.aspx">Premios</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="registro.aspx">Registro</a>
-                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
 
         <!-- Contenido principal -->
-        <main class="container mt-4">
+        <main class="container mt-4" style="flex: 1;">
             <asp:ContentPlaceHolder ID="MainContent" runat="server" />
         </main>
 
@@ -49,4 +43,5 @@
         </footer>
     </form>
 </body>
+
 </html>

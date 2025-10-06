@@ -12,6 +12,17 @@ namespace Presentacion
             if (!IsPostBack)
             {
                 LimpiarClasesValidacion();
+
+                // ---- Recuperamos los valores guardados en session
+                string codigoVoucher = Session["CodigoVoucher"] as string;
+                int? codPremio = Session["CodPremio"] as int?;
+
+                if (string.IsNullOrEmpty(codigoVoucher) || codPremio == null)
+                {
+                    // ---- Si no hay datos guardados, vamos al inicio
+                    Response.Redirect("MainForm.aspx");
+                    return;
+                }
             }
         }
 
@@ -61,101 +72,148 @@ namespace Presentacion
             LimpiarClasesValidacion();
             lblError.Text = "";
 
-            // Validaciones
+            Regex soloLetras = new Regex("^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$");
+
+            // ---- Validar DNI
             if (string.IsNullOrWhiteSpace(txtDni.Text))
             {
                 txtDni.CssClass = "form-control is-invalid";
                 formularioValido = false;
             }
-            else txtDni.CssClass = "form-control is-valid";
+            else
+            {
+                txtDni.CssClass = "form-control is-valid";
+            }
 
-            if (string.IsNullOrWhiteSpace(txtNombre.Text))
+            // ---- Validar Nombre
+            if (string.IsNullOrWhiteSpace(txtNombre.Text) || !soloLetras.IsMatch(txtNombre.Text.Trim()))
             {
                 txtNombre.CssClass = "form-control is-invalid";
                 formularioValido = false;
             }
-            else txtNombre.CssClass = "form-control is-valid";
+            else
+            {
+                txtNombre.CssClass = "form-control is-valid";
+            }
 
-            if (string.IsNullOrWhiteSpace(txtApellido.Text))
+            // ---- Validar Apellido
+            if (string.IsNullOrWhiteSpace(txtApellido.Text) || !soloLetras.IsMatch(txtApellido.Text.Trim()))
             {
                 txtApellido.CssClass = "form-control is-invalid";
                 formularioValido = false;
             }
-            else txtApellido.CssClass = "form-control is-valid";
+            else
+            {
+                txtApellido.CssClass = "form-control is-valid";
+            }
 
+            // ---- Validar Email
             if (string.IsNullOrWhiteSpace(txtEmail.Text) || !EsEmailValido(txtEmail.Text))
             {
                 txtEmail.CssClass = "form-control is-invalid";
                 formularioValido = false;
             }
-            else txtEmail.CssClass = "form-control is-valid";
+            else
+            {
+                txtEmail.CssClass = "form-control is-valid";
+            }
 
+            // ---- Validar Dirección
             if (string.IsNullOrWhiteSpace(txtDireccion.Text))
             {
                 txtDireccion.CssClass = "form-control is-invalid";
                 formularioValido = false;
             }
-            else txtDireccion.CssClass = "form-control is-valid";
+            else
+            {
+                txtDireccion.CssClass = "form-control is-valid";
+            }
 
+            // ---- Validar Ciudad
             if (string.IsNullOrWhiteSpace(txtCiudad.Text))
             {
                 txtCiudad.CssClass = "form-control is-invalid";
                 formularioValido = false;
             }
-            else txtCiudad.CssClass = "form-control is-valid";
+            else
+            {
+                txtCiudad.CssClass = "form-control is-valid";
+            }
 
+            // ---- Validar Código Postal
             if (!int.TryParse(txtCp.Text, out int cpValue) || cpValue <= 0)
             {
                 txtCp.CssClass = "form-control is-invalid";
                 formularioValido = false;
             }
-            else txtCp.CssClass = "form-control is-valid";
+            else
+            {
+                txtCp.CssClass = "form-control is-valid";
+            }
 
+            // ---- Validar Términos
             if (!chkTerminos.Checked)
             {
                 chkTerminos.CssClass = "form-check-input is-invalid";
                 formularioValido = false;
             }
-            else chkTerminos.CssClass = "form-check-input is-valid";
+            else
+            {
+                chkTerminos.CssClass = "form-check-input is-valid";
+            }
 
             if (!formularioValido) return;
 
-            // ---- Crear cliente
-            Clientes nuevo = new Clientes
-            {
-                Documento = txtDni.Text.Trim(),
-                Nombre = txtNombre.Text.Trim(),
-                Apellido = txtApellido.Text.Trim(),
-                Email = txtEmail.Text.Trim(),
-                Direccion = txtDireccion.Text.Trim(),
-                Ciudad = txtCiudad.Text.Trim(),
-                Cp = cpValue
-            };
+            // ---- Recuperamos los datos del voucher y premio de la session
+            string codigoVoucher = Session["CodigoVoucher"] as string;
+            int idArticulo = (int)Session["CodPremio"];
 
-            ClienteNegocio negocio = new ClienteNegocio();
-
-            // ---- Verificamos si el DNI ya existe
-            if (negocio.BuscarPorDni(nuevo.Documento) != null)
-            {
-                lblError.Text = "El cliente ya está registrado.";
-                lblError.CssClass = "text-danger mt-2";
-                txtDni.CssClass = "form-control is-invalid";
-                return;
-            }
+            ClienteNegocio clienteNeg = new ClienteNegocio();
+            VoucherNegocio voucherNeg = new VoucherNegocio();
 
             try
             {
-                negocio.RegistrarCliente(nuevo);
+                // ---- Buscamos si el cliente ya existe
+                Clientes clienteExistente = clienteNeg.BuscarPorDni(txtDni.Text.Trim());
+                int idCliente;
+
+                if (clienteExistente == null)
+                {
+                    // ---- Registramos un nuevo cliente
+                    Clientes nuevo = new Clientes
+                    {
+                        Documento = txtDni.Text.Trim(),
+                        Nombre = txtNombre.Text.Trim(),
+                        Apellido = txtApellido.Text.Trim(),
+                        Email = txtEmail.Text.Trim(),
+                        Direccion = txtDireccion.Text.Trim(),
+                        Ciudad = txtCiudad.Text.Trim(),
+                        Cp = cpValue
+                    };
+
+                    clienteNeg.RegistrarCliente(nuevo);
+                    idCliente = clienteNeg.BuscarPorDni(nuevo.Documento).Id;
+                }
+                else
+                {
+                    // ---- Si ya existe
+                    idCliente = clienteExistente.Id;
+                }
+
+                // ---- Registramos el canje del voucher
+                voucherNeg.RegistrarCanje(codigoVoucher, idCliente, idArticulo);
+
+                // ---- Redirigimos a la página de éxito
                 Response.Redirect("exito.aspx");
             }
             catch (Exception ex)
             {
-                lblError.Text = "Error al registrar: " + ex.Message;
+                lblError.Text = "Error al procesar el registro o canje: " + ex.Message;
                 lblError.CssClass = "text-danger mt-2";
             }
         }
 
-        // ---- Resetear 
+        // ---- Reset form 
         protected void btnLimpiar_Click(object sender, EventArgs e)
         {
             txtDni.Text = string.Empty;

@@ -34,7 +34,7 @@ namespace Negocio
 
                 if (!datos.Lector.Read())
                 {
-                    //  no existe
+                    // no existe
                     return new ResultadoVoucher { Estado = EstadoVoucher.NoExiste };
                 }
 
@@ -43,7 +43,7 @@ namespace Negocio
 
                 if (idClienteObj != DBNull.Value && fechaObj != DBNull.Value)
                 {
-                    //  existe pero ya está usado
+                    // ya está usado
                     return new ResultadoVoucher { Estado = EstadoVoucher.Usado };
                 }
 
@@ -64,6 +64,24 @@ namespace Negocio
                 datos.CerrarConexion();
             }
         }
+
+        // ---- Registramos el canje del voucher
+        public void RegistrarCanje(string codigoVoucher, int idCliente, int idArticulo)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta("UPDATE Vouchers SET IdCliente = @idCliente, FechaCanje = @fecha, IdArticulo = @idArticulo WHERE CodigoVoucher = @codigo");
+                datos.SetearParametro("@idCliente", idCliente);
+                datos.SetearParametro("@fecha", DateTime.Now);
+                datos.SetearParametro("@idArticulo", idArticulo);
+                datos.SetearParametro("@codigo", codigoVoucher);
+                datos.EjecutarAccion();
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
     }
 }
-
